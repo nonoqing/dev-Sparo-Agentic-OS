@@ -39,6 +39,24 @@ export const CosmosCanvas: React.FC = () => {
     return ids.map((id) => graph.citations[id]).filter(Boolean);
   }, [graph]);
 
+  const onNodePointerDown = (e: React.PointerEvent, node: ResearchNode) => {
+    drag.current = { node, sx: e.clientX, sy: e.clientY, ox: positions.get(node.id)?.x ?? 0, oy: positions.get(node.id)?.y ?? 0, moved: false };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    e.stopPropagation();
+  };
+  const onDragMove = (e: React.PointerEvent) => {
+    const d = drag.current; if (!d) return;
+    const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+    if (!d.moved && Math.hypot(dx, dy) < 5) return;
+    d.moved = true;
+    setOverrides((m) => { const n = new Map(m); n.set(d.node.id, { x: d.ox + dx / view.s, y: d.oy + dy / view.s }); return n; });
+  };
+  const onDragEnd = () => {
+    const d = drag.current; if (!d) return;
+    if (!d.moved) { if (citeCountOf(graph, d.node.id) > 0) setCiteFor(d.node); }
+    drag.current = null;
+  };
+
   const onVpPointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest('.cosmos-node, .cosmos-hud, .cosmos-drawer')) return;
     pan.current = { x: e.clientX, y: e.clientY };
@@ -60,25 +78,7 @@ export const CosmosCanvas: React.FC = () => {
     });
   };
 
-  const onNodePointerDown = (e: React.PointerEvent, node: ResearchNode) => {
-    drag.current = { node, sx: e.clientX, sy: e.clientY, ox: positions.get(node.id)?.x ?? 0, oy: positions.get(node.id)?.y ?? 0, moved: false };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    e.stopPropagation();
-  };
-  const onDragMove = (e: React.PointerEvent) => {
-    const d = drag.current; if (!d) return;
-    const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
-    if (!d.moved && Math.hypot(dx, dy) < 5) return;
-    d.moved = true;
-    setOverrides((m) => { const n = new Map(m); n.set(d.node.id, { x: d.ox + dx / view.s, y: d.oy + dy / view.s }); return n; });
-  };
-  const onDragEnd = () => {
-    const d = drag.current; if (!d) return;
-    if (!d.moved) { if (citeCountOf(graph, d.node.id) > 0) setCiteFor(d.node); }
-    drag.current = null;
-  };
-
-  const toggle = (id: string) => setHidden((h) => { const n = new Set(h); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const toggle = (id: string) => setHidden((h) => { const n = new Set(h); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   const isHidden = (n: ResearchNode): boolean => { let p = n.parentId; while (p) { if (hidden.has(p)) return true; p = graph.nodes[p]?.parentId ?? null; } return false; };
   const zoom = (f: number) => setView((v) => { const ns = clamp(v.s * f, 0.35, 2.4); const cx = innerWidth / 2, cy = innerHeight / 2; return { s: ns, tx: cx - ns * ((cx - v.tx) / v.s), ty: cy - ns * ((cy - v.ty) / v.s) }; });
 

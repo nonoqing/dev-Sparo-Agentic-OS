@@ -11,8 +11,8 @@ export function ribbon(p0: Pt, p3: Pt, w0: number, w1: number, seed: number): { 
     x: u*u*u*p0.x + 3*u*u*t*c1.x + 3*u*t*t*c2.x + t*t*t*p3.x,
     y: u*u*u*p0.y + 3*u*u*t*c1.y + 3*u*t*t*c2.y + t*t*t*p3.y }; };
   const T = (t: number): Pt => { const u = 1 - t;
-    let x = 3*u*u*(c1.x-p0.x) + 6*u*t*(c2.x-c1.x) + 3*t*t*(p3.x-c2.x);
-    let y = 3*u*u*(c1.y-p0.y) + 6*u*t*(c2.y-c1.y) + 3*t*t*(p3.y-c2.y);
+    const x = 3*u*u*(c1.x-p0.x) + 6*u*t*(c2.x-c1.x) + 3*t*t*(p3.x-c2.x);
+    const y = 3*u*u*(c1.y-p0.y) + 6*u*t*(c2.y-c1.y) + 3*t*t*(p3.y-c2.y);
     const m = Math.hypot(x, y) || 1; return { x: x/m, y: y/m }; };
   const N = 22, L: [number, number][] = [], R: [number, number][] = [];
   for (let i = 0; i <= N; i++) {
