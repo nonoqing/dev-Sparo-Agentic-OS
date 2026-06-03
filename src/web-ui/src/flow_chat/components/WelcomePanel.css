@@ -371,6 +371,28 @@
   color: var(--ds-chat-text-secondary);
 }
 
+/* ── DEV-ONLY: cosmos mock launcher (remove when sub-project B wires the real stream) ── */
+
+.cosmos-dev-launch {
+  align-self: flex-start;
+  padding: 5px 12px;
+  border: 1px dashed var(--ds-chat-border-strong);
+  border-radius: 20px;
+  background: none;
+  color: var(--ds-chat-text-muted);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.cosmos-dev-launch:hover {
+  opacity: 1;
+  border-color: var(--ds-chat-accent);
+  color: var(--ds-chat-accent);
+}
+
 /* ── Animations ── */
 
 @keyframes wp-fadeIn {
