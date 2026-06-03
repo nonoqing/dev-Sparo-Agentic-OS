@@ -4,35 +4,38 @@ import { applyGraphEvent } from './applyGraphEvent';
 import { computeLayout, PLANET_R } from './computeLayout';
 
 const build = (...es: GraphEvent[]) => es.reduce(applyGraphEvent, createInitialGraph());
+const core: GraphEvent = { t: 'node.add', node: { id: 'core', parentId: null, kind: 'core', label: 'x', status: 'exploring', branch: 0 } };
+const planet = (id: string, b: number): GraphEvent => ({ t: 'node.add', node: { id, parentId: 'core', kind: 'planet', label: id, status: 'exploring', branch: b } });
+const moon = (id: string, p: string, b: number): GraphEvent => ({ t: 'node.add', node: { id, parentId: p, kind: 'moon', label: id, status: 'exploring', branch: b } });
 
-describe('computeLayout', () => {
+describe('computeLayout (adaptive constellation)', () => {
   it('places core at the origin', () => {
-    const g = build({ t: 'node.add', node: { id: 'core', parentId: null, kind: 'core', label: 'x', status: 'exploring', branch: 0 } });
-    expect(computeLayout(g).get('core')).toEqual({ x: 0, y: 0 });
+    expect(computeLayout(build(core)).get('core')).toEqual({ x: 0, y: 0 });
   });
 
-  it('places planets on the PLANET_R circle around core', () => {
-    const g = build(
-      { t: 'node.add', node: { id: 'core', parentId: null, kind: 'core', label: 'x', status: 'exploring', branch: 0 } },
-      { t: 'node.add', node: { id: 'p1', parentId: 'core', kind: 'planet', label: 'a', status: 'exploring', branch: 1 } },
-      { t: 'node.add', node: { id: 'p2', parentId: 'core', kind: 'planet', label: 'b', status: 'exploring', branch: 2 } },
-    );
+  it('is deterministic for the same graph', () => {
+    const g = build(core, planet('p1', 1), planet('p2', 2), moon('m1', 'p1', 1));
+    const a = computeLayout(g), b = computeLayout(g);
+    for (const id of ['core', 'p1', 'p2', 'm1']) expect(a.get(id)).toEqual(b.get(id));
+  });
+
+  it('keeps planets within a radius band (never the cardinal cross)', () => {
+    const g = build(core, planet('p1', 1), planet('p2', 2), planet('p3', 3), planet('p4', 4));
     const pos = computeLayout(g);
-    for (const id of ['p1', 'p2']) {
-      const p = pos.get(id)!;
-      expect(Math.round(Math.hypot(p.x, p.y))).toBe(PLANET_R);
+    for (const id of ['p1', 'p2', 'p3', 'p4']) {
+      const p = pos.get(id)!; const d = Math.hypot(p.x, p.y);
+      expect(d).toBeGreaterThan(PLANET_R - 70);
+      expect(d).toBeLessThan(PLANET_R + 70);
     }
+    const angles = ['p1', 'p2', 'p3', 'p4'].map((id) => { const p = pos.get(id)!; return Math.round(Math.atan2(p.y, p.x) * 100); });
+    expect(new Set(angles).size).toBe(4); // golden-angle spread → all distinct, no symmetric cross
   });
 
-  it('places a moon near its planet, farther from core than the planet', () => {
-    const g = build(
-      { t: 'node.add', node: { id: 'core', parentId: null, kind: 'core', label: 'x', status: 'exploring', branch: 0 } },
-      { t: 'node.add', node: { id: 'p1', parentId: 'core', kind: 'planet', label: 'a', status: 'exploring', branch: 1 } },
-      { t: 'node.add', node: { id: 'm1', parentId: 'p1', kind: 'moon', label: 'm', status: 'exploring', branch: 1 } },
-    );
+  it('places a moon off the core->planet line (non-collinear)', () => {
+    const g = build(core, planet('p1', 1), moon('m1', 'p1', 1));
     const pos = computeLayout(g);
     const p = pos.get('p1')!, m = pos.get('m1')!;
-    expect(Math.hypot(m.x, m.y)).toBeGreaterThan(Math.hypot(p.x, p.y));
-    expect(Math.hypot(m.x - p.x, m.y - p.y)).toBeLessThan(PLANET_R);
+    const cross = p.x * (m.y - p.y) - p.y * (m.x - p.x);
+    expect(Math.abs(cross)).toBeGreaterThan(50);
   });
 });
