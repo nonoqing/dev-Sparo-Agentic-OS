@@ -11,22 +11,12 @@
   pointer-events: none;
   will-change: transform;
   background:
-    radial-gradient(38% 32% at 26% 30%, rgba(96, 60, 180, 0.40), transparent 70%),
-    radial-gradient(42% 40% at 78% 26%, rgba(20, 120, 150, 0.30), transparent 72%),
-    radial-gradient(46% 38% at 62% 82%, rgba(170, 40, 110, 0.26), transparent 72%),
-    radial-gradient(60% 50% at 50% 50%, rgba(40, 30, 90, 0.30), transparent 80%);
+    radial-gradient(46% 40% at 38% 32%, rgba(42, 62, 116, 0.28), transparent 72%),
+    radial-gradient(40% 36% at 74% 64%, rgba(30, 50, 90, 0.20), transparent 74%);
   filter: blur(14px);
 }
 
-.cosmos-band {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.5;
-  will-change: transform;
-  background: linear-gradient(118deg, transparent 38%, rgba(180, 160, 255, 0.10) 48%, rgba(150, 220, 255, 0.07) 54%, transparent 64%);
-  filter: blur(6px);
-}
+.cosmos-band { display: none; }
 
 .cosmos-stars { will-change: transform; }
 

@@ -10,8 +10,6 @@ import { ReportDrawer } from './ReportDrawer';
 import type { Citation, ResearchNode } from '../types';
 import './CosmosCanvas.scss';
 
-const BRANCH = ['#5fe0ff', '#b48cff', '#ffc861', '#ff8fc7', '#5fffd0'];
-const branchColor = (b: number) => BRANCH[((b - 1) % BRANCH.length + BRANCH.length) % BRANCH.length] || '#5fe0ff';
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 export const CosmosCanvas: React.FC = () => {
@@ -87,13 +85,12 @@ export const CosmosCanvas: React.FC = () => {
       <Starfield parallax={{ x: view.tx, y: view.ty }} />
       <div className="cosmos-world" style={{ transform: `translate(${view.tx}px,${view.ty}px) scale(${view.s})` }}>
         <div className="cosmos-origin">
-          <StarStreams graph={graph} positions={positions} branchColor={branchColor} hidden={hidden} />
+          <StarStreams graph={graph} positions={positions} hidden={hidden} />
           {graph.nodeOrder.map((id) => {
             const n = graph.nodes[id]; const pos = positions.get(id);
             if (!pos || isHidden(n)) return null;
             return (
               <StarNode key={id} node={n} pos={pos}
-                color={n.kind === 'core' ? '#ffe6a8' : branchColor(n.branch)}
                 citeCount={citeCountOf(graph, id)}
                 hasChildren={childrenOf(graph, id).length > 0}
                 collapsed={hidden.has(id)}
@@ -118,7 +115,7 @@ export const CosmosCanvas: React.FC = () => {
       </div>
 
       <CitationDrawer open={!!citeFor} title={citeFor?.label ?? ''} citations={citeFor ? citationsFor(citeFor) : []}
-        accent={citeFor ? branchColor(citeFor.branch) : '#5fe0ff'} onClose={() => setCiteFor(null)} />
+        accent="#e8c878" onClose={() => setCiteFor(null)} />
       <ReportDrawer open={reportOpen} sections={graph.report} onClose={() => setReportOpen(false)} />
     </div>
   );
