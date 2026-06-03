@@ -6,8 +6,6 @@ interface Props {
   graph: GraphState;
   positions: Map<string, XY>;
   hidden: Set<string>;
-  /** Deprecated; ignored. The constellation renders monochrome gold. Kept so existing call sites still typecheck. */
-  branchColor?: (branch: number) => string;
 }
 
 export const StarStreams: React.FC<Props> = ({ graph, positions, hidden }) => {
