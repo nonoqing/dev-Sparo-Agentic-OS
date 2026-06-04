@@ -309,8 +309,11 @@ async fn build_sessions_submenu(app: &AppHandle, s: &TrayStrings) -> Submenu<tau
             } else {
                 session.session_name
             };
-            let label = if label.len() > 50 {
-                format!("{}...", &label[..50])
+            // Truncate by characters, not bytes: byte slicing panics when the cut
+            // lands inside a multi-byte char (e.g. a long Chinese session title).
+            let label = if label.chars().count() > 50 {
+                let truncated: String = label.chars().take(50).collect();
+                format!("{truncated}...")
             } else {
                 label
             };
