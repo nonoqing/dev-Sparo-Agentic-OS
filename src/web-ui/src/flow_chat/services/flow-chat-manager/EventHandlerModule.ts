@@ -56,7 +56,6 @@ import {
   routeTextChunkToToolCardInternal,
   routeToolEventToToolCardInternal
 } from './SubagentModule';
-import { resetResearchGraphStore } from '../../research-graph/researchGraphStores';
 
 const pendingImageAnalysisTurns = new Map<string, string>();
 
@@ -833,11 +832,10 @@ function handleDialogTurnStarted(context: FlowChatContext, event: any): void {
   const state = store.getState();
   const session = state.sessions.get(sessionId);
 
-  // A fresh Deep Research turn starts a new research graph: reset the per-session
-  // store so a re-run doesn't pile onto the previous turn's constellation.
-  if (session?.descriptor.profileId === 'deep-research') {
-    resetResearchGraphStore(sessionId);
-  }
+  // Note: the per-session research graph is intentionally NOT reset between turns.
+  // One Deep Research session = one growing constellation; continuing the
+  // conversation accumulates nodes (the reducer dedupes by id). A fresh
+  // constellation comes from starting a new session.
 
   if (!session) {
     log.warn('DialogTurnStarted: session not in store, creating placeholder', { sessionId, sessionsCount: state.sessions.size });
