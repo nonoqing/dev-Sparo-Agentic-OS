@@ -24,7 +24,6 @@ import { useWorkspaceContext } from '@/infrastructure/contexts/WorkspaceContext'
 import type { WorkspaceInfo } from '@/shared/types';
 import { useSessionProfile } from '@/app/session-profiles';
 import { Button, SparoAgentIcon } from '@/design-system';
-import { TAB_EVENTS } from '@/app/components/panels/content-canvas/types/content';
 import CoworkExampleCards from './CoworkExampleCards';
 import './WelcomePanel.css';
 
@@ -371,19 +370,6 @@ export const WelcomePanel: React.FC<WelcomePanelProps> = ({
               })}
             </div>
           </div>
-        )}
-
-        {/* DEV-ONLY cosmos mock launcher — remove when sub-project B wires the real GraphEvent stream */}
-        {isDeepResearchSession && (
-          <button
-            type="button"
-            className="cosmos-dev-launch"
-            onClick={() => window.dispatchEvent(new CustomEvent(TAB_EVENTS.AGENT_CREATE_TAB, {
-              detail: { type: 'cosmos-canvas', title: '研究星河', data: { source: 'mock' } },
-            }))}
-          >
-            ▶ 打开研究星河(DEV·mock)
-          </button>
         )}
       </div>
     </div>

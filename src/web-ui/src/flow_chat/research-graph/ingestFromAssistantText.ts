@@ -1,5 +1,24 @@
 import { parseDrMarkers } from './markerBridge';
 import { getResearchGraphStore } from './researchGraphStores';
+import { TAB_EVENTS } from '@/app/components/panels/content-canvas/types/content';
+
+/** Sessions whose constellation panel has already been auto-opened (avoid duplicate tabs). */
+const openedPanels = new Set<string>();
+
+/** Open the constellation aux tab for a session once its research graph has content. */
+function ensureCanvasOpen(sessionId: string): void {
+  if (openedPanels.has(sessionId)) return;
+  openedPanels.add(sessionId);
+  try {
+    window.dispatchEvent(
+      new CustomEvent(TAB_EVENTS.AGENT_CREATE_TAB, {
+        detail: { type: 'cosmos-canvas', title: '研究星座', data: { sessionId } },
+      }),
+    );
+  } catch {
+    /* non-browser env (e.g. unit tests) — ignore */
+  }
+}
 
 /**
  * Parse `[[DR:...]]` markers out of a Deep Research assistant message, ingest the
@@ -18,7 +37,9 @@ export function ingestResearchMarkers(sessionId: string, fullAssistantText: stri
   try {
     const { events, cleanedText } = parseDrMarkers(fullAssistantText);
     if (events.length > 0) {
-      getResearchGraphStore(sessionId).getState().ingestMany(events);
+      const store = getResearchGraphStore(sessionId);
+      store.getState().ingestMany(events);
+      if (store.getState().graph.nodeOrder.length > 0) ensureCanvasOpen(sessionId);
     }
     return cleanedText;
   } catch {
