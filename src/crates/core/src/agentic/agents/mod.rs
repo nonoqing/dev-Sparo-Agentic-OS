@@ -23,6 +23,7 @@ mod deep_research_agent;
 mod explore_agent;
 mod file_finder_agent;
 mod filer_agent;
+mod research_specialist_agent;
 // Hidden agents
 mod code_review_agent;
 mod generate_doc_agent;
@@ -49,6 +50,7 @@ pub use design_agent::DesignAgent;
 pub use design_review_agent::DesignReviewAgent;
 pub use dispatcher_agent::DispatcherAgent;
 pub use explore_agent::ExploreAgent;
+pub use research_specialist_agent::ResearchSpecialistAgent;
 pub use file_finder_agent::FileFinderAgent;
 pub use filer_agent::FilerAgent;
 pub use generate_doc_agent::GenerateDocAgent;
