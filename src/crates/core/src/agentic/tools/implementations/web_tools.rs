@@ -378,7 +378,14 @@ impl WebFetchTool {
                 return true;
             }
         }
-        let sample = &content[..content.len().min(2048)];
+        // Truncate at a char boundary, not a raw byte index: fetched content can be
+        // binary (e.g. a PDF) lossy-decoded to UTF-8 containing multi-byte replacement
+        // chars, so byte 2048 may land mid-character and panic on a raw slice.
+        let mut end = content.len().min(2048);
+        while end > 0 && !content.is_char_boundary(end) {
+            end -= 1;
+        }
+        let sample = &content[..end];
         let sample_lower = sample.to_lowercase();
         sample_lower.contains("<!doctype html")
             || sample_lower.contains("<html")
