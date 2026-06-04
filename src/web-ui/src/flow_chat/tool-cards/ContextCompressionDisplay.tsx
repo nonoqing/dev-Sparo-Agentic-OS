@@ -98,11 +98,11 @@ export const ContextCompressionDisplay: React.FC<ContextCompressionDisplayProps>
       {data.tokensBefore !== undefined && data.tokensAfter !== undefined ? (
         <>
           <span className="token-stat">
-            {data.tokensBefore.toLocaleString()} éˆ«?{data.tokensAfter.toLocaleString()} tokens
+            {data.tokensBefore.toLocaleString()} → {data.tokensAfter.toLocaleString()} tokens
           </span>
           {savedTokens !== undefined && data.compressionRatio !== undefined && (
             <span className="savings-tag">
-              Saved {savedTokens.toLocaleString()} è·¯ Ratio {(data.compressionRatio * 100).toFixed(0)}%
+              Saved {savedTokens.toLocaleString()} · Ratio {(data.compressionRatio * 100).toFixed(0)}%
             </span>
           )}
         </>
@@ -114,7 +114,7 @@ export const ContextCompressionDisplay: React.FC<ContextCompressionDisplayProps>
 
   const extra = isCompleted && data.compressionCount ? (
     <span className="compression-meta">
-      {getTriggerText(data.trigger)} è·¯ Compression #{data.compressionCount}
+      {getTriggerText(data.trigger)} · Compression #{data.compressionCount}
     </span>
   ) : undefined;
 
