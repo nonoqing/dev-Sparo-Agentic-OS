@@ -24,23 +24,42 @@ export function computeLayout(state: GraphState): Map<string, XY> {
   if (!core) return pos;
   pos.set(core, { x: 0, y: 0 });
 
-  const planets = childrenOf(state, core);
-  planets.forEach((pid, i) => {
-    const ang = i * GOLDEN_ANGLE + (seed(pid) - 0.5) * 0.7 - Math.PI / 2;
-    const rad = PLANET_R + (seed(pid + 'R') - 0.5) * 130;
-    const px = Math.cos(ang) * rad;
-    const py = Math.sin(ang) * rad;
-    pos.set(pid, { x: px, y: py });
+  const placeChildren = (parentId: string, depth: number, parentAngle: number, seen: Set<string>) => {
+    const children = childrenOf(state, parentId).filter((id) => !seen.has(id));
+    const parent = pos.get(parentId);
+    if (!parent) return;
 
-    const moons = childrenOf(state, pid);
-    const outward = Math.atan2(py, px);
-    moons.forEach((mid, k) => {
-      const tilt = 0.55 + (seed(mid) - 0.5) * 0.5; // offset from outward → non-collinear
-      const fan = moons.length === 1 ? 0 : (k / (moons.length - 1) - 0.5) * 0.8;
-      const a = outward + tilt + fan + (seed(mid + 'a') - 0.5) * 0.3;
-      const rad2 = MOON_R + (seed(mid + 'R') - 0.5) * 70;
-      pos.set(mid, { x: px + Math.cos(a) * rad2, y: py + Math.sin(a) * rad2 });
+    children.forEach((id, i) => {
+      seen.add(id);
+      let ang: number;
+      let rad: number;
+
+      if (depth === 1) {
+        ang = i * GOLDEN_ANGLE + (seed(id) - 0.5) * 0.7 - Math.PI / 2;
+        rad = PLANET_R + (seed(id + 'R') - 0.5) * 130;
+      } else {
+        const fan = children.length === 1 ? 0 : (i / (children.length - 1) - 0.5) * 0.9;
+        const tilt = 0.55 + (seed(id) - 0.5) * 0.5;
+        ang = parentAngle + tilt + fan + (seed(id + 'a') - 0.5) * 0.3;
+        rad = MOON_R + Math.min(depth - 2, 3) * 28 + (seed(id + 'R') - 0.5) * 70;
+      }
+
+      pos.set(id, { x: parent.x + Math.cos(ang) * rad, y: parent.y + Math.sin(ang) * rad });
+      placeChildren(id, depth + 1, ang, seen);
     });
+  };
+
+  const seen = new Set<string>([core]);
+  placeChildren(core, 1, -Math.PI / 2, seen);
+
+  const orphans = state.nodeOrder.filter((id) => !seen.has(id));
+  orphans.forEach((id, i) => {
+    const ang = (i + childrenOf(state, core).length) * GOLDEN_ANGLE + (seed(id) - 0.5) * 0.7 - Math.PI / 2;
+    const rad = PLANET_R + 170 + (seed(id + 'R') - 0.5) * 130;
+    pos.set(id, { x: Math.cos(ang) * rad, y: Math.sin(ang) * rad });
+    seen.add(id);
+    placeChildren(id, 2, ang, seen);
   });
+
   return pos;
 }

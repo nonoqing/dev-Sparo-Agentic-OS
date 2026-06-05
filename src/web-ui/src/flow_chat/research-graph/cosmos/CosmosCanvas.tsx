@@ -12,6 +12,14 @@ import './CosmosCanvas.scss';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
+export function resetCosmosLayout(
+  setView: React.Dispatch<React.SetStateAction<{ tx: number; ty: number; s: number }>>,
+  setOverrides: React.Dispatch<React.SetStateAction<Map<string, XY>>>,
+): void {
+  setView({ tx: 0, ty: 0, s: 0.92 });
+  setOverrides(new Map());
+}
+
 export const CosmosCanvas: React.FC = () => {
   const graph = useResearchGraph((s) => s.graph);
   const [view, setView] = useState({ tx: 0, ty: 0, s: 0.92 });
@@ -109,7 +117,7 @@ export const CosmosCanvas: React.FC = () => {
           <span className="cosmos-hud__lvl">{Math.round(view.s * 100)}%</span>
           <button className="cosmos-btn" onClick={() => zoom(1.15)}>＋</button>
         </div>
-        <button className="cosmos-btn" onClick={() => setView({ tx: 0, ty: 0, s: 0.92 })}>复位</button>
+        <button className="cosmos-btn" onClick={() => resetCosmosLayout(setView, setOverrides)}>复位</button>
         <button className="cosmos-btn cosmos-btn--warm" onClick={() => setReportOpen(true)}>⟢ 收束成报告</button>
         <div className="cosmos-hud__hint">拖星体移动 · 滚轮缩放 · 拖空平移<br/>点「引用 N」看文献 · 点核心收束</div>
       </div>

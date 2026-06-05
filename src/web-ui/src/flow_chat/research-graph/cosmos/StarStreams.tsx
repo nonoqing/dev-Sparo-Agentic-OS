@@ -8,11 +8,20 @@ interface Props {
   hidden: Set<string>;
 }
 
+function hasHiddenAncestor(graph: GraphState, id: string, hidden: Set<string>): boolean {
+  let parentId = graph.nodes[id]?.parentId ?? null;
+  while (parentId) {
+    if (hidden.has(parentId)) return true;
+    parentId = graph.nodes[parentId]?.parentId ?? null;
+  }
+  return false;
+}
+
 export const StarStreams: React.FC<Props> = ({ graph, positions, hidden }) => {
   const lines: React.ReactNode[] = [];
   graph.nodeOrder.forEach((id) => {
     const n = graph.nodes[id];
-    if (!n.parentId || hidden.has(id) || hidden.has(n.parentId)) return;
+    if (!n.parentId || hasHiddenAncestor(graph, id, hidden)) return;
     const a = positions.get(n.parentId);
     const b = positions.get(id);
     if (!a || !b) return;
