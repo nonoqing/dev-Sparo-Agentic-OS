@@ -32,7 +32,8 @@ export type PanelContentType =
   | 'generative-widget'
   | 'design-artifact'
   | 'design-artifacts-browser'
-  | 'design-tokens-studio';
+  | 'design-tokens-studio'
+  | 'cosmos-canvas';
 
 export interface PanelContent {
   type: PanelContentType;

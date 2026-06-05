@@ -1,0 +1,18 @@
+.cosmos-node { position: absolute; left: 0; top: 0; cursor: grab; font-family: "Cormorant Garamond", "Noto Serif SC", serif; }
+.cosmos-node--core { cursor: pointer; }
+.cosmos-starmark { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); overflow: visible; }
+.cosmos-starmark__spike { animation: cosmos-spike 3.6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
+.cosmos-node__label { position: absolute; left: 14px; top: -9px; white-space: nowrap; pointer-events: none; display: flex; flex-direction: column; gap: 2px; }
+.cosmos-node__label--core { left: 50%; top: 24px; transform: translateX(-50%); align-items: center; }
+.cosmos-label { font-weight: 600; font-size: 13.5px; color: #f0e2bd; letter-spacing: .01em; }
+.cosmos-node--core .cosmos-label { font-size: 20px; color: #ffe9b0; }
+.cosmos-sub { font-family: "IBM Plex Mono", monospace; font-size: 9px; color: #aeb9d8; letter-spacing: .05em; }
+.cosmos-meta { display: flex; align-items: center; gap: 6px; font-family: "IBM Plex Mono", monospace; pointer-events: auto; }
+.cosmos-cites { font-size: 9.5px; color: #e8c878; opacity: .9; cursor: pointer; padding: 1px 6px; border-radius: 8px; background: rgba(232,200,120,.1); border: 1px solid rgba(232,200,120,.25); }
+.cosmos-cites--muted { color: #9aa6c8; opacity: .6; cursor: default; background: none; border-color: transparent; }
+.cosmos-badge { font-size: 8.5px; letter-spacing: .05em; padding: 1px 6px; border-radius: 7px; }
+.cosmos-badge--flow { color: #1a1408; background: #ffc861; }
+.cosmos-badge--contested { color: #ff9ec0; border: 1px dashed rgba(255,158,192,.6); }
+.cosmos-toggle { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(232,200,120,.5); color: #e8c878; display: grid; place-items: center; font-size: 10px; cursor: pointer; background: rgba(0,0,0,.3); }
+.cosmos-toggle:hover { background: rgba(232,200,120,.2); }
+@keyframes cosmos-spike { from { opacity: .5; } to { opacity: 1; } }

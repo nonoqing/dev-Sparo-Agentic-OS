@@ -65,8 +65,10 @@ const AgentAppStudioPanel = React.lazy(() =>
   import('@/app/scenes/apps/agent-app/components/AgentAppStudioPanel')
 );
 
+import { CosmosCanvasPanel } from '@/flow_chat/research-graph/cosmos/CosmosCanvasPanel';
+
 // CodePreview, ChartRenderer and CodeNode removed - visualization features disabled
-import { 
+import {
   FlexiblePanelProps
 } from './types';
 import { 
@@ -634,6 +636,9 @@ const FlexiblePanel: React.FC<ExtendedFlexiblePanelProps> = memo(({
             />
           </React.Suspense>
         );
+      }
+      case 'cosmos-canvas': {
+        return <CosmosCanvasPanel data={content.data} />;
       }
       default:
         return (

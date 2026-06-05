@@ -3,8 +3,8 @@ use super::{
     DebugAgent, DeepResearchAgent, DesignAgent, DesignReviewAgent, DispatcherAgent, ExploreAgent,
     FileFinderAgent, FilerAgent, GenerateDocAgent, GlobalDailyReportAgent,
     GlobalMemoryConsolidatorAgent, GlobalMilestoneAgent, HostScanAgent, InitAgent,
-    LiveAppStudioAgent, PlanAgent, TeamAgent, WorkspaceMemoryConsolidatorAgent,
-    WorkspaceOverviewRefresherAgent,
+    LiveAppStudioAgent, PlanAgent, ResearchSpecialistAgent, TeamAgent,
+    WorkspaceMemoryConsolidatorAgent, WorkspaceOverviewRefresherAgent,
 };
 use crate::agent_app::AgentAppAgent;
 use crate::agentic::agents::custom_subagents::{
@@ -391,6 +391,7 @@ impl AgentRegistry {
             Arc::new(ExploreAgent::new()),
             Arc::new(FileFinderAgent::new()),
             Arc::new(DesignReviewAgent::new()),
+            Arc::new(ResearchSpecialistAgent::new()),
         ];
         for subagent in builtin_subagents {
             register(

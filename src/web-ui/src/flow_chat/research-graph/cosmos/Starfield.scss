@@ -1,0 +1,33 @@
+.cosmos-bg,
+.cosmos-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cosmos-nebula {
+  position: absolute;
+  inset: -15%;
+  pointer-events: none;
+  will-change: transform;
+  background:
+    radial-gradient(46% 40% at 38% 32%, rgba(42, 62, 116, 0.28), transparent 72%),
+    radial-gradient(40% 36% at 74% 64%, rgba(30, 50, 90, 0.20), transparent 74%);
+  filter: blur(14px);
+}
+
+.cosmos-band { display: none; }
+
+.cosmos-stars { will-change: transform; }
+
+.cosmos-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #fff;
+  animation: cosmos-twinkle var(--d) ease-in-out infinite alternate;
+}
+
+@keyframes cosmos-twinkle {
+  from { opacity: var(--o0); }
+  to { opacity: var(--o1); }
+}

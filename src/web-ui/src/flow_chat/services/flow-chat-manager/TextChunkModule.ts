@@ -3,6 +3,16 @@
  */
 
 import type { FlowChatContext, FlowTextItem } from './types';
+import { ingestResearchMarkers } from '../../research-graph/ingestFromAssistantText';
+
+/**
+ * Whether a session belongs to the Deep Research agent profile. Marker parsing
+ * only runs for these sessions so other sessions stay byte-for-byte unchanged.
+ */
+function isDeepResearchSession(context: FlowChatContext, sessionId: string): boolean {
+  return context.flowChatStore.getSessionHeader(sessionId)?.descriptor.profileId === 'deep-research';
+}
+
 /**
  * Process a normal text chunk without notifying the store.
  */
@@ -19,13 +29,22 @@ export function processNormalTextChunkInternal(
   if (!context.activeTextItems.has(sessionId)) {
     context.activeTextItems.set(sessionId, new Map());
   }
-  
+
   const sessionContentBuffer = context.contentBuffers.get(sessionId)!;
   const sessionActiveTextItems = context.activeTextItems.get(sessionId)!;
 
   // Coalesce excessive newlines while appending.
   const currentContent = sessionContentBuffer.get(roundId) || '';
-  const cleanedContent = (currentContent + text).replace(/\n{3,}/g, '\n\n');
+  let cleanedContent = (currentContent + text).replace(/\n{3,}/g, '\n\n');
+
+  // For Deep Research sessions, re-parse the full accumulated text on every
+  // update: ingest any `[[DR:...]]` markers into the per-session research-graph
+  // store and strip them from what gets displayed. Idempotent (duplicate node/
+  // cite ids and node.update are ignored), and never throws.
+  if (isDeepResearchSession(context, sessionId)) {
+    cleanedContent = ingestResearchMarkers(sessionId, cleanedContent);
+  }
+
   sessionContentBuffer.set(roundId, cleanedContent);
 
   let textItemId = sessionActiveTextItems.get(roundId);

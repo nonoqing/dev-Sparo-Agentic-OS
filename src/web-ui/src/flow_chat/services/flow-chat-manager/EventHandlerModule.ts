@@ -832,6 +832,11 @@ function handleDialogTurnStarted(context: FlowChatContext, event: any): void {
   const state = store.getState();
   const session = state.sessions.get(sessionId);
 
+  // Note: the per-session research graph is intentionally NOT reset between turns.
+  // One Deep Research session = one growing constellation; continuing the
+  // conversation accumulates nodes (the reducer dedupes by id). A fresh
+  // constellation comes from starting a new session.
+
   if (!session) {
     log.warn('DialogTurnStarted: session not in store, creating placeholder', { sessionId, sessionsCount: state.sessions.size });
     store.addExternalSession(

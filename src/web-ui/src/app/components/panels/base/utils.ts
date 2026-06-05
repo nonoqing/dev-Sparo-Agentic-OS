@@ -258,6 +258,14 @@ export const PANEL_CONTENT_CONFIGS: Record<PanelContentType, PanelContentConfig>
     supportsDownload: false,
     showHeader: false
   },
+  'cosmos-canvas': {
+    type: 'cosmos-canvas',
+    displayName: 'Research Graph',
+    icon: Network,
+    supportsCopy: false,
+    supportsDownload: false,
+    showHeader: false
+  },
 };
 
 /**
