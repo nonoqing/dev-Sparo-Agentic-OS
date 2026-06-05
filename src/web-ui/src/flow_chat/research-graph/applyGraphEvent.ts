@@ -6,9 +6,11 @@ export const applyGraphEvent = (state: GraphState, event: GraphEvent): GraphStat
     switch (event.t) {
       case 'node.add': {
         if (draft.nodes[event.node.id]) return;
-        draft.nodes[event.node.id] = event.node;
-        draft.nodeOrder.push(event.node.id);
-        if (!draft.citeByNode[event.node.id]) draft.citeByNode[event.node.id] = [];
+        const parentId = event.node.parentId;
+        const node = parentId && !draft.nodes[parentId] ? { ...event.node, parentId: 'core' } : event.node;
+        draft.nodes[node.id] = node;
+        draft.nodeOrder.push(node.id);
+        if (!draft.citeByNode[node.id]) draft.citeByNode[node.id] = [];
         break;
       }
       case 'node.update': {

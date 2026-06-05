@@ -4,8 +4,8 @@
 import React from 'react';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { CosmosCanvas } from './CosmosCanvas';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { CosmosCanvas, resetCosmosLayout } from './CosmosCanvas';
 import { createResearchGraphStore, ResearchGraphProvider } from '../researchGraphStore';
 
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -23,5 +23,13 @@ describe('CosmosCanvas', () => {
     act(() => { root.render(<ResearchGraphProvider value={store}><CosmosCanvas /></ResearchGraphProvider>); });
     expect(container.textContent).toContain('主题X');
     expect(container.textContent).toContain('起源Y');
+  });
+
+  it('resetCosmosLayout resets view and clears dragged node overrides', () => {
+    const setView = vi.fn();
+    const setOverrides = vi.fn();
+    resetCosmosLayout(setView, setOverrides);
+    expect(setView).toHaveBeenCalledWith({ tx: 0, ty: 0, s: 0.92 });
+    expect(setOverrides).toHaveBeenCalledWith(new Map());
   });
 });

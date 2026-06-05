@@ -45,4 +45,13 @@ describe('applyGraphEvent', () => {
     expect(g.report).toHaveLength(1);
     expect(g.report[0].heading).toBe('H');
   });
+
+  it('anchors nodes with missing parents to core so they remain visible', () => {
+    const g = ev(
+      { t: 'node.add', node: { id: 'core', parentId: null, kind: 'core', label: '主题', status: 'exploring', branch: 0 } },
+      { t: 'node.add', node: { id: 'orphan', parentId: 'missing', kind: 'moon', label: '孤儿', status: 'exploring', branch: 1 } },
+    );
+    expect(g.nodes.orphan.parentId).toBe('core');
+    expect(childrenOf(g, 'core')).toEqual(['orphan']);
+  });
 });
