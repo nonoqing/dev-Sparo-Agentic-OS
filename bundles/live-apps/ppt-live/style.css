@@ -1097,7 +1097,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: auto auto minmax(160px, 1fr);
+  grid-template-rows: auto auto minmax(120px, 1fr);
   border-left: 1px solid var(--studio-line);
   background: var(--studio-sidebar-bg);
   overflow: hidden;
@@ -1131,8 +1131,11 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   display: grid;
   grid-template-rows: auto;
   min-height: 0;
-  max-height: clamp(156px, 24vh, 260px);
+  max-height: clamp(200px, 36vh, 400px);
   overflow-y: auto;
+  /* Reserve the scrollbar track so the content width never jumps when the
+     scrollbar appears or disappears (e.g. while a dropdown is open). */
+  scrollbar-gutter: stable;
   border-bottom: 1px solid var(--studio-line);
 }
 
@@ -1195,8 +1198,9 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .style-row select,
-.ppt-flat-select__native {
+.ppt-flat-select > .ppt-flat-select__native {
   position: absolute;
+  inset: 0 auto auto 0;
   width: 1px;
   height: 1px;
   padding: 0;
@@ -1310,20 +1314,30 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 .ppt-flat-select__menu {
-  position: absolute;
+  position: fixed;
   z-index: var(--z-popover);
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
   display: grid;
   gap: 2px;
   max-height: 220px;
   overflow: auto;
+  overscroll-behavior: contain;
   padding: 4px;
   border: 1px solid var(--studio-border);
   border-radius: 8px;
   background: var(--studio-panel);
   box-shadow: var(--studio-shadow);
+  animation: ppt-flat-select-in 120ms ease-out;
+}
+
+@keyframes ppt-flat-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .ppt-flat-select__menu[hidden] { display: none; }
