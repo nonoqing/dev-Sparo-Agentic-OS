@@ -1,6 +1,8 @@
 import { openMainSession } from '@/flow_chat/services/childSessionPanels';
 import { openWorkspaceScene } from '@/app/navigation/workspaceNavigation';
 import { useWorkDockStore } from '@/app/stores/workDockStore';
+import { flowChatStore } from '@/flow_chat/store/FlowChatStore';
+import { descriptorFromAgentType } from '@/flow_chat/domain/sessionDescriptor';
 import type { WorkRecord, WorkSurfaceRef } from '../domain/workTypes';
 import { resolveWorkSurface } from './workSurfaceResolver';
 
@@ -24,6 +26,26 @@ export function openWorkInCenter(workId: string): void {
 
 export async function openWork(work: WorkRecord): Promise<void> {
   const surface = resolveWorkSurface(work);
+
+  // Pre-register newly created work sessions so FlowChatStore.switchSession doesn't
+  // silently no-op due to a race with the SSE session_created event.
+  if (surface.kind === 'work_session' && !flowChatStore.getState().sessions.has(surface.sessionId)) {
+    const agentType = work.assignment?.kind === 'agent' ? work.assignment.agentType : undefined;
+    const descriptor = descriptorFromAgentType(agentType);
+    const sessionRef = work.sessionRefs.find(r => r.sessionId === surface.sessionId);
+    const workspacePath =
+      sessionRef?.workspacePath ??
+      (work.scope.kind === 'workspace' ? work.scope.workspacePath : undefined);
+    flowChatStore.addExternalSession(
+      surface.sessionId,
+      work.title,
+      descriptor,
+      workspacePath ?? undefined,
+      undefined,
+      descriptor.storageScope,
+    );
+  }
+
   await openWorkSurface(surface, work.id);
 }
 

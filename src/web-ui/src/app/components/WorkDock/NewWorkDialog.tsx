@@ -11,7 +11,6 @@ import { agentAppAPI, type AgentAppInfo } from '@/infrastructure/api/service-api
 import { descriptorFromAgentType, getBackendAgentType, type SessionDescriptor } from '@/flow_chat/domain/sessionDescriptor';
 import { createOsHandoffMetadata } from '@/flow_chat/domain/osHandoffIntent';
 import { flowChatManager } from '@/flow_chat/services/FlowChatManager';
-import { flowChatStore } from '@/flow_chat/store/FlowChatStore';
 import { openDispatcherSession } from '@/flow_chat/services/openDispatcherSession';
 import { useSessionModeStore } from '@/app/stores/sessionModeStore';
 import { useWorkStore } from '@/app/agentic-os/work/data/workStore';
@@ -157,23 +156,6 @@ export async function launchWorkForChoice(params: {
       agentType: backendAgentType,
     },
   });
-
-  // Pre-register the work session in flowChatStore immediately so switchSession
-  // doesn't silently no-op due to a race with the SSE session_created event.
-  const workSessionSurface = work.surfaces.find(
-    (s): s is Extract<typeof work.surfaces[0], { kind: 'work_session' }> => s.kind === 'work_session'
-  );
-  if (workSessionSurface) {
-    const sessionRef = work.sessionRefs.find(r => r.sessionId === workSessionSurface.sessionId);
-    flowChatStore.addExternalSession(
-      workSessionSurface.sessionId,
-      workTitle,
-      descriptor,
-      sessionRef?.workspacePath ?? workspace?.rootPath ?? undefined,
-      undefined,
-      descriptor.storageScope,
-    );
-  }
 
   if (workspace) {
     await rememberWorkspace(workspace.id);
